@@ -31,10 +31,10 @@ func init() {
       Expect(node).To(Equal(t.Left))
       Expect(node.Value).To(Equal(ex))
 
-      right_node := node.InsertRight("hello")
+      rightNode := node.InsertRight("hello")
 
-      Expect(right_node).To(Equal(node.Right))
-      Expect(right_node.Value).To(Equal("hello"))
+      Expect(rightNode).To(Equal(node.Right))
+      Expect(rightNode.Value).To(Equal("hello"))
     })
 
   })
@@ -53,10 +53,10 @@ func init() {
       Expect(node).To(Equal(t.Left))
       Expect(node.Value).To(Equal(3))
 
-      right_node := node.Insert(4, compare)
+      rightNode := node.Insert(4, compare)
 
-      Expect(right_node).To(Equal(node.Right))
-      Expect(right_node.Value).To(Equal(4))
+      Expect(rightNode).To(Equal(node.Right))
+      Expect(rightNode.Value).To(Equal(4))
 
   })
 }
