@@ -18,15 +18,36 @@ func (self *DecisionTree) Train(inputLog InputLog, targetKey string) {
     left.Train(leftInputLog, targetKey)
     right.Train(rightInputLog, targetKey)
     self.Left, self.Right = &left.Tree, &right.Tree
+    self.Value = nextKey
   } else {
     self.Value = inputLog[0][targetKey]
   }
 }
 
 func (self InputLog) maxEntropy(targetKey string) string {
-  var key string
-  for key, _ = range self[0] { break }
-  return key
+  entropy := make(map[string]int, len(self[0])-1)
+  for _, input := range self {
+    for key, value := range input {
+      if key != targetKey {
+        if value == input[targetKey] {
+          entropy[key] += 1
+        } else {
+          entropy[key] += 0
+        }
+      }
+    }
+  }
+  maxEntropy := 0
+  resultKey := targetKey
+  for key, value := range entropy {
+    ent := value - len(self)/2
+    if ent < 0 { ent *= -1 }
+    if ent >= maxEntropy {
+      maxEntropy = ent
+      resultKey = key
+    }
+  }
+  return resultKey
 }
 
 func (self InputLog) splitOnKey(targetKey string) (left InputLog, right InputLog) {

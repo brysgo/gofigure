@@ -25,7 +25,25 @@ func init() {
       Expect(myTree.Left.Right.Value).To(Equal(true))
     })
 
-    XIt("it uses ID3 to maximize entropy", func(){})
+    It("it uses ID3 to maximize entropy", func(){
+      id3InputSet := dt.InputLog{
+        {"0": true,"1":false,"2":false,"3": true},
+        {"0": true,"1": true,"2":false,"3": true},
+        {"0":false,"1":false,"2":false,"3": true},
+        {"0":false,"1": true,"2":false,"3": true},
+        {"0": true,"1":false,"2": true,"3":false},
+        {"0": true,"1": true,"2": true,"3":false},
+        {"0":false,"1":false,"2": true,"3":false},
+        {"0":false,"1": true,"2": true,"3":false},
+      }
+
+      myTree := new(dt.DecisionTree)
+      myTree.Train(id3InputSet, "3")
+
+      Expect(myTree.Value).To(Equal("2"))
+    })
+
+    XIt("doesn't continue building a branch if a decision can be made", func(){})
 
   })
 }
