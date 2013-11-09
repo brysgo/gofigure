@@ -1,4 +1,4 @@
-package bt
+package binary_tree
 
 type AnyType interface{}
 type Comparer func(one, two AnyType) (bool)

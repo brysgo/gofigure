@@ -1,4 +1,4 @@
-package gofigure
+package decision_tree
 
 import (
   bt "../binary_tree"

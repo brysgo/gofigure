@@ -1,4 +1,4 @@
-package gofigure_test
+package binary_tree_test
 
 import (
   . "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
   "testing"
 )
 
-func TestGofigure(t *testing.T) {
+func TestBinary_tree(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "Gofigure")
+  RunSpecs(t, "Binary_tree Suite")
 }
