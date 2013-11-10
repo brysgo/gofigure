@@ -15,8 +15,12 @@ func (self *DecisionTree) Train(inputLog InputLog, targetKey string) {
   if nextKey != targetKey {
     leftInputLog, rightInputLog := inputLog.splitOnKey(nextKey)
     left, right := new(DecisionTree), new(DecisionTree)
-    left.Train(leftInputLog, targetKey)
-    right.Train(rightInputLog, targetKey)
+    if len(leftInputLog) > 0 {
+      left.Train(leftInputLog, targetKey)
+    }
+    if len(rightInputLog) > 0 {
+      right.Train(rightInputLog, targetKey)
+    }
     self.Left, self.Right = &left.Tree, &right.Tree
     self.Value = nextKey
   } else {
@@ -28,19 +32,24 @@ func (self InputLog) maxEntropy(targetKey string) string {
   entropy := make(map[string]int, len(self[0])-1)
   for _, input := range self {
     for key, value := range input {
-      if key != targetKey {
-        if value == input[targetKey] {
-          entropy[key] += 1
-        } else {
-          entropy[key] += 0
+      if key == targetKey { 
+        if value {
+          entropy[targetKey] += 1
         }
+        continue
+      }
+      if value == input[targetKey] {
+        entropy[key] += 1
+      } else {
+        entropy[key] += 0
       }
     }
   }
-  maxEntropy := 0
+  if entropy[targetKey] % len(self) == 0 { return targetKey }
+  maxEntropy := 0.0
   resultKey := targetKey
   for key, value := range entropy {
-    ent := value - len(self)/2
+    ent := float64(value - len(self)/2)
     if ent < 0 { ent *= -1 }
     if ent >= maxEntropy {
       maxEntropy = ent

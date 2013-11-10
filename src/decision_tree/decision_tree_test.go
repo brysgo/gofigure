@@ -8,40 +8,40 @@ import (
 
 var _ = Describe("DecisionTree", func() {
 
-  It("builds a decision tree from a list of input features and an output feature", func() {
-    xorInputSet := dt.InputLog{
-      {"0":true, "1":false, "2":true},
-      {"0":false,"1":false,"2":false},
-      {"0":true, "1":true, "2":false},
-      {"0":false, "1":true, "2":true},
-    }
+  Describe("Training a Decision Tree", func() {
+    var id3InputSet dt.InputLog
+    var myTree *dt.DecisionTree
 
-    myTree := new(dt.DecisionTree)
-    myTree.Train(xorInputSet, "2")
+    BeforeEach( func() {
+      id3InputSet = dt.InputLog{
+        {"0":false,"1": true,"2":false,"3": true},
+        {"0": true,"1": true,"2":false,"3": true},
+        {"0":false,"1": true,"2":false,"3": true},
+        {"0": true,"1": true,"2":false,"3": true},
+        {"0":false,"1": true,"2": true,"3":false},
+        {"0": true,"1": true,"2": true,"3":false},
+        {"0":false,"1":false,"2":false,"3":false},
+        {"0": true,"1":false,"2":false,"3":false},
+      }
 
-    Expect(myTree.Left).ToNot(BeNil())
-    Expect(myTree.Left.Right).ToNot(BeNil())
-    Expect(myTree.Left.Right.Value).To(Equal(true))
+      myTree = new(dt.DecisionTree)
+      myTree.Train(id3InputSet, "3")
+    })
+
+    It("it uses ID3 to maximize entropy", func(){
+      Expect(myTree.Value).To(Equal("2"))
+      Expect(myTree.Left.Value).To(Equal("1"))
+    })
+
+    It("doesn't continue building a branch if a decision can be made", func(){
+      Expect(myTree.Left.Right.Right).To(BeNil())
+    })
+
+    It("builds a tree with the right decisions", func() {
+      Expect(myTree.Left.Right.Value).To(Equal(true))
+      Expect(myTree.Left.Left.Value).To(Equal(false))
+      Expect(myTree.Right.Value).To(Equal(false))
+    })
   })
-
-  It("it uses ID3 to maximize entropy", func(){
-    id3InputSet := dt.InputLog{
-      {"0": true,"1":false,"2":false,"3": true},
-      {"0": true,"1": true,"2":false,"3": true},
-      {"0":false,"1":false,"2":false,"3": true},
-      {"0":false,"1": true,"2":false,"3": true},
-      {"0": true,"1":false,"2": true,"3":false},
-      {"0": true,"1": true,"2": true,"3":false},
-      {"0":false,"1":false,"2": true,"3":false},
-      {"0":false,"1": true,"2": true,"3":false},
-    }
-
-    myTree := new(dt.DecisionTree)
-    myTree.Train(id3InputSet, "3")
-
-    Expect(myTree.Value).To(Equal("2"))
-  })
-
-  XIt("doesn't continue building a branch if a decision can be made", func(){})
 
 })
