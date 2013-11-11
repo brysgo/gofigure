@@ -8,8 +8,6 @@ import (
 type DecisionTree struct {
   bt.Tree
 }
-// type Input map[string]bool
-// type InputLog []Input
 
 func (self *DecisionTree) Train(inputLog il.InputLog, targetKey string) {
   nextKey := inputLog.MaxEntropy(targetKey)
@@ -25,7 +23,7 @@ func (self *DecisionTree) Train(inputLog il.InputLog, targetKey string) {
     self.Left, self.Right = &left.Tree, &right.Tree
     self.Value = nextKey
   } else {
-    self.Value = inputLog[0][targetKey]
+    self.Value = inputLog[0].HasKey(targetKey)
   }
 }
 
