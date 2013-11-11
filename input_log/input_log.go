@@ -1,34 +1,10 @@
-package decision_tree
+package input_log
 
-import (
-  bt "../binary_tree"
-)
-
-type DecisionTree struct {
-  bt.Tree
-}
+// type Input []string
 type Input map[string]bool
 type InputLog []Input
 
-func (self *DecisionTree) Train(inputLog InputLog, targetKey string) {
-  nextKey := inputLog.maxEntropy(targetKey)
-  if nextKey != targetKey {
-    leftInputLog, rightInputLog := inputLog.splitOnKey(nextKey)
-    left, right := new(DecisionTree), new(DecisionTree)
-    if len(leftInputLog) > 0 {
-      left.Train(leftInputLog, targetKey)
-    }
-    if len(rightInputLog) > 0 {
-      right.Train(rightInputLog, targetKey)
-    }
-    self.Left, self.Right = &left.Tree, &right.Tree
-    self.Value = nextKey
-  } else {
-    self.Value = inputLog[0][targetKey]
-  }
-}
-
-func (self InputLog) maxEntropy(targetKey string) string {
+func (self InputLog) MaxEntropy(targetKey string) string {
   entropy := make(map[string]int, len(self[0])-1)
   for _, input := range self {
     for key, value := range input {
@@ -59,7 +35,7 @@ func (self InputLog) maxEntropy(targetKey string) string {
   return resultKey
 }
 
-func (self InputLog) splitOnKey(targetKey string) (left InputLog, right InputLog) {
+func (self InputLog) SplitOnKey(targetKey string) (left InputLog, right InputLog) {
   for _, v := range self {
     remainder := make(Input, len(v)-1)
     for k, b := range v {
@@ -75,4 +51,3 @@ func (self InputLog) splitOnKey(targetKey string) (left InputLog, right InputLog
   }
   return
 }
-

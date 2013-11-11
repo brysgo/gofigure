@@ -1,7 +1,8 @@
 package decision_tree_test
 
 import (
-  dt "../decision_tree"
+  dt "github.com/brysgo/gofigure/decision_tree"
+  il "github.com/brysgo/gofigure/input_log"
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
 )
@@ -9,11 +10,11 @@ import (
 var _ = Describe("DecisionTree", func() {
 
   Describe("Training a Decision Tree", func() {
-    var id3InputSet dt.InputLog
+    var id3InputSet il.InputLog
     var myTree *dt.DecisionTree
 
     BeforeEach( func() {
-      id3InputSet = dt.InputLog{
+      id3InputSet = il.InputLog{
         {"0":false,"1": true,"2":false,"3": true},
         {"0": true,"1": true,"2":false,"3": true},
         {"0":false,"1": true,"2":false,"3": true},
