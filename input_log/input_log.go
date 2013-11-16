@@ -73,6 +73,22 @@ func (self Input) HasKey(a string) bool {
   return false
 }
 
+func (self InputLog) Keys() []string {
+  allKeys := make(map[string]int)
+  for _, input := range self {
+    for _, key := range input {
+      if _, ok := allKeys[key]; !ok {
+        allKeys[key] = len(allKeys)
+      }
+    }
+  }
+  result := make([]string, len(allKeys))
+  for key, value := range allKeys {
+    result[value] = key
+  }
+  return result
+}
+
 func (self InputLog) existentialMap() (result []map[string]bool) {
   allKeys := make(map[string]bool)
   for index, input := range self {

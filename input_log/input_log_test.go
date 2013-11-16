@@ -55,4 +55,12 @@ var _ = Describe("InputLog", func() {
 
   })
 
+  Describe("Keys", func() {
+
+    It("returns a complete list of the input log's strings", func() {
+      Expect(data.Keys()).To(Equal([]string{"0", "1", "2", "3"}))
+    })
+
+  })
+
 })
