@@ -1,8 +1,8 @@
 package prediction_forest
 
-import(
-	il "github.com/brysgo/gofigure/input_log"
+import (
 	dt "github.com/brysgo/gofigure/decision_tree"
+	il "github.com/brysgo/gofigure/input_log"
 )
 
 type PredictionForest map[string]*dt.DecisionTree
@@ -19,5 +19,3 @@ func (self *PredictionForest) Train(inputLog il.InputLog) {
 		(*self)[key] = decisionTree
 	}
 }
-
-
