@@ -3,8 +3,8 @@ package prediction_forest_test
 import (
   gomock "code.google.com/p/gomock/gomock"
   il "github.com/brysgo/gofigure/input_log"
-  dt "github.com/brysgo/gofigure/mocks/mock_decision_tree"
   pf "github.com/brysgo/gofigure/prediction_forest"
+  dt "github.com/brysgo/gofigure_mocks/mock_decision_tree"
   gomock_ginkgo "github.com/brysgo/gomock_ginkgo"
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
