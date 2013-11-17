@@ -5,17 +5,24 @@ import (
 	il "github.com/brysgo/gofigure/input_log"
 )
 
-type PredictionForest map[string]*dt.DecisionTree
+type PredictionForest struct {
+	Trees        map[string]dt.Interface
+	treeTemplate dt.Interface
+}
 
-func New() *PredictionForest {
-	forest := make(PredictionForest)
+func New(treeTemplate dt.Interface) *PredictionForest {
+	forest := PredictionForest{
+		Trees:        make(map[string]dt.Interface),
+		treeTemplate: treeTemplate,
+	}
 	return &forest
 }
 
 func (self *PredictionForest) Train(inputLog il.InputLog) {
 	for _, key := range inputLog.Keys() {
-		decisionTree := new(dt.DecisionTree)
-		decisionTree.Train(inputLog, key)
-		(*self)[key] = decisionTree
+		var newTree dt.Interface
+		newTree = self.treeTemplate.New()
+		newTree.Train(inputLog, key)
+		self.Trees[key] = newTree
 	}
 }
