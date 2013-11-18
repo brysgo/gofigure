@@ -4,10 +4,10 @@ import (
   "code.google.com/p/gomock/gomock"
   il "github.com/brysgo/gofigure/input_log"
   pf "github.com/brysgo/gofigure/prediction_forest"
-  dt "github.com/brysgo/gofigure_mocks/mock_decision_tree"
   . "github.com/onsi/ginkgo"
   "github.com/onsi/ginkgo/thirdparty/gomocktestreporter"
   . "github.com/onsi/gomega"
+  dt "gofigure_mocks/mock_decision_tree"
 )
 
 var _ = Describe("PredictionForest", func() {
