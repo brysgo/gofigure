@@ -7,13 +7,11 @@ import (
 
 type PredictionForest struct {
   Trees        map[string]dt.Interface
-  treeTemplate dt.Interface
 }
 
 func New(treeTemplate dt.Interface) *PredictionForest {
   forest := PredictionForest{
     Trees:        make(map[string]dt.Interface),
-    treeTemplate: treeTemplate,
   }
   return &forest
 }
@@ -21,7 +19,7 @@ func New(treeTemplate dt.Interface) *PredictionForest {
 func (self *PredictionForest) Train(inputLog il.InputLog) {
   for _, key := range inputLog.Keys() {
     var newTree dt.Interface
-    newTree = self.treeTemplate.New()
+    newTree = dt.New()
     newTree.Train(inputLog, key)
     self.Trees[key] = newTree
   }

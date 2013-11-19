@@ -16,7 +16,7 @@ type Interface interface {
   Set(AnyType)
 }
 
-func New() Interface {
+var New = func() Interface {
   t := Tree{}
   return &t
 }

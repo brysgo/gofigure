@@ -6,17 +6,18 @@ import (
 )
 
 type DecisionTree struct {
-  bt.Tree
+  bt.Interface
 }
 type Interface interface {
   bt.Interface
   Train(il.Interface, string)
   Decide([]string) bool
-  New() Interface
 }
 
-func (self *DecisionTree) New() Interface {
-  t := DecisionTree{}
+var New = func() Interface {
+  t := DecisionTree{
+    Interface: bt.New(),
+  }
   return &t
 }
 
@@ -24,7 +25,7 @@ func (self *DecisionTree) Train(inputLog il.Interface, targetKey string) {
   nextKey := inputLog.MaxEntropy(targetKey)
   if nextKey != targetKey {
     leftInputLog, rightInputLog := inputLog.SplitOnKey(nextKey)
-    left, right := new(DecisionTree), new(DecisionTree)
+    left, right := New(), New()
     if leftInputLog.Any() {
       left.Train(leftInputLog, targetKey)
     }
@@ -35,19 +36,12 @@ func (self *DecisionTree) Train(inputLog il.Interface, targetKey string) {
     self.InsertRight(right)
     self.Set(nextKey)
   } else {
-    self.Set(inputContainsKey(inputLog.At(0), targetKey))
+    present := inputLog.KeyCount(targetKey)
+    absent := inputLog.Len() - present
+    self.Set(present > absent)
   }
 }
 
 func (self *DecisionTree) Decide(input []string) bool {
   return true
-}
-
-func inputContainsKey(list []string, a string) bool {
-  for _, b := range list {
-    if b == a {
-      return true
-    }
-  }
-  return false
 }
