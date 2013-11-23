@@ -43,5 +43,26 @@ func (self *DecisionTree) Train(inputLog il.Interface, targetKey string) {
 }
 
 func (self *DecisionTree) Decide(input []string) bool {
-  return true
+  nodeLabel := self.Value()
+
+  switch nodeLabel.(type) {
+  case bool:
+    return nodeLabel.(bool)
+  default:
+    nodeLabelInInput := false
+    for _, key := range input {
+      if nodeLabel == key {
+        nodeLabelInInput = true
+        break
+      }
+    }
+    var nextNode Interface
+    if nodeLabelInInput {
+      nextNode = self.Right().(Interface)
+    } else {
+      nextNode = self.Left().(Interface)
+    }
+    return nextNode.Decide(input)
+  }
+
 }

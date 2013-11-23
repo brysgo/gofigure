@@ -9,26 +9,26 @@ import (
 
 var _ = Describe("DecisionTree", func() {
 
+  var id3InputSet il.InputLog
+  var myTree dt.Interface
+
+  BeforeEach(func() {
+    id3InputSet = il.InputLog{
+      {"1", "3"},
+      {"0", "1", "3"},
+      {"1", "3"},
+      {"0", "1", "3"},
+      {"1", "2"},
+      {"0", "1", "2"},
+      {},
+      {"0"},
+    }
+
+    myTree = dt.New()
+    myTree.Train(il.Interface(id3InputSet), "3")
+  })
+
   Describe("Training a Decision Tree", func() {
-    var id3InputSet il.InputLog
-    var myTree dt.Interface
-
-    BeforeEach(func() {
-      id3InputSet = il.InputLog{
-        {"1", "3"},
-        {"0", "1", "3"},
-        {"1", "3"},
-        {"0", "1", "3"},
-        {"1", "2"},
-        {"0", "1", "2"},
-        {},
-        {"0"},
-      }
-
-      myTree = dt.New()
-      myTree.Train(il.Interface(id3InputSet), "3")
-    })
-
     It("it uses ID3 to maximize entropy", func() {
       Expect(myTree.Value()).To(Equal("2"))
       Expect(myTree.Left().Value()).To(Equal("1"))
@@ -42,6 +42,15 @@ var _ = Describe("DecisionTree", func() {
       Expect(myTree.Left().Right().Value()).To(Equal(true))
       Expect(myTree.Left().Left().Value()).To(Equal(false))
       Expect(myTree.Right().Value()).To(Equal(false))
+    })
+  })
+
+  Describe("Making a decision", func() {
+    It("decides false in the right cases", func() {
+      Expect(myTree.Decide([]string{"0", "1"})).To(Equal(true))
+    })
+    It("decides true in the right cases", func() {
+      Expect(myTree.Decide([]string{"2"})).To(Equal(false))
     })
   })
 

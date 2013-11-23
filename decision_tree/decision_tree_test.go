@@ -6,6 +6,7 @@ import (
   dt "github.com/brysgo/gofigure/decision_tree"
   . "github.com/onsi/ginkgo"
   "github.com/onsi/ginkgo/thirdparty/gomocktestreporter"
+  . "github.com/onsi/gomega"
   mbt "gofigure_mocks/mock_binary_tree"
   mdt "gofigure_mocks/mock_decision_tree"
   mil "gofigure_mocks/mock_input_log"
@@ -141,6 +142,51 @@ var _ = Describe("DecisionTree", func() {
   })
 
   Describe("#Decide", func() {
-  })
 
+    var input []string
+
+    Describe("when the node value is a boolean", func() {
+      It("returns the node value", func() {
+        gomock.InOrder(
+          mockBinaryTree.EXPECT().Value().Return(true),
+          mockBinaryTree.EXPECT().Value().Return(false),
+        )
+        Expect(myTree.Decide(input)).To(Equal(true))
+        Expect(myTree.Decide(input)).To(Equal(false))
+      })
+    })
+
+    Describe("when the node value is a string label", func() {
+      var (
+        mockDecisionTree *mdt.MockInterface
+      )
+
+      BeforeEach(func() {
+        mockDecisionTree = mdt.NewMockInterface(mockCtrl)
+      })
+
+      Context("when the node label is in the input set", func() {
+        It("recurses right", func() {
+          input = []string{"aKey", "currentNodeLabel", "anotherKey"}
+          gomock.InOrder(
+            mockBinaryTree.EXPECT().Value().Return("currentNodeLabel"),
+            mockBinaryTree.EXPECT().Right().Return(mockDecisionTree),
+            mockDecisionTree.EXPECT().Decide(input).Return(true),
+          )
+          Expect(myTree.Decide(input)).To(Equal(true))
+        })
+      })
+      Context("when the node label is NOT in the input set", func() {
+        It("recurses left", func() {
+          input = []string{"aKey", "anotherLabel", "anotherKey"}
+          gomock.InOrder(
+            mockBinaryTree.EXPECT().Value().Return("currentNodeLabel"),
+            mockBinaryTree.EXPECT().Left().Return(mockDecisionTree),
+            mockDecisionTree.EXPECT().Decide(input).Return(false),
+          )
+          Expect(myTree.Decide(input)).To(Equal(false))
+        })
+      })
+    })
+  })
 })
