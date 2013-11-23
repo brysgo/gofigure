@@ -60,7 +60,7 @@ var _ = Describe("PredictionForest", func() {
         mockDecisionTree.EXPECT().Train(gomock.Any(), gomock.Any()),
         mockDecisionTree.EXPECT().Train(gomock.Any(), gomock.Any()),
       )
-      myForest = pf.New(mockDecisionTree)
+      myForest = pf.New().(*pf.PredictionForest)
       myForest.Train(predictionForestInputSet)
     })
 
@@ -74,7 +74,7 @@ var _ = Describe("PredictionForest", func() {
     BeforeEach(func() {
       mockHelloTree = mdt.NewMockInterface(mockCtrl)
       mockWorldTree = mdt.NewMockInterface(mockCtrl)
-      myForest = pf.New(mockHelloTree)
+      myForest = pf.New().(*pf.PredictionForest)
       myForest.Trees["hello"] = mockHelloTree
       myForest.Trees["world"] = mockWorldTree
     })

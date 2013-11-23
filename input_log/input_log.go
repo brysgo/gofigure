@@ -9,6 +9,7 @@ type Interface interface {
   At(int) []string
   Len() int
   KeyCount(string) int
+  Keys() []string
 }
 
 func (self InputLog) AddInput(input []string) Interface {
@@ -18,7 +19,7 @@ func (self InputLog) AddInput(input []string) Interface {
 
 func (self InputLog) MaxEntropy(targetKey string) string {
   existentialMap := self.existentialMap()
-  entropy := make(map[string]int, len(existentialMap[0])-1)
+  entropy := make(map[string]int, len(existentialMap[0]))
   for _, input := range existentialMap {
     for key, value := range input {
       if key == targetKey {

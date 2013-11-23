@@ -8,15 +8,19 @@ import (
 type PredictionForest struct {
   Trees        map[string]dt.Interface
 }
+type Interface interface {
+	Train(il.Interface)
+	Predict([]string) []string
+}
 
-func New(treeTemplate dt.Interface) *PredictionForest {
+func New() Interface {
   forest := PredictionForest{
     Trees:        make(map[string]dt.Interface),
   }
   return &forest
 }
 
-func (self *PredictionForest) Train(inputLog il.InputLog) {
+func (self *PredictionForest) Train(inputLog il.Interface) {
   for _, key := range inputLog.Keys() {
     var newTree dt.Interface
     newTree = dt.New()
