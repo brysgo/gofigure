@@ -11,36 +11,22 @@ import (
   mil "gofigure_mocks/mock_input_log"
 )
 
-var _ = Describe("DecisionTree", func() {
-  var (
-    mockCtrl                            *gomock.Controller
-    myTree                              dt.Interface
-    leftDecisionTree, rightDecisionTree *mdt.MockInterface
-    mockBinaryTree                      *mbt.MockInterface
-    binaryTreeNew                       func() bt.Interface
-    decisionTreeNew                     func() dt.Interface
-  )
+var (
+  mockCtrl        *gomock.Controller
+  myTree          dt.Interface
+  mockBinaryTree  *mbt.MockInterface
+  binaryTreeNew   func() bt.Interface = bt.New
+  decisionTreeNew func() dt.Interface = dt.New
+)
 
+var _ = Describe("DecisionTree", func() {
   BeforeEach(func() {
     mockCtrl = gomock.NewController(gomocktestreporter.New())
     mockBinaryTree = mbt.NewMockInterface(mockCtrl)
-    binaryTreeNew = bt.New
     bt.New = func() bt.Interface {
       return mockBinaryTree
     }
     myTree = dt.New()
-    leftDecisionTree = mdt.NewMockInterface(mockCtrl)
-    rightDecisionTree = mdt.NewMockInterface(mockCtrl)
-    leftRightParity := 0
-    decisionTreeNew = dt.New
-    dt.New = func() dt.Interface {
-      leftRightParity++
-      if leftRightParity%2 == 0 {
-        return rightDecisionTree
-      } else {
-        return leftDecisionTree
-      }
-    }
   })
 
   AfterEach(func() {
@@ -55,27 +41,29 @@ var _ = Describe("DecisionTree", func() {
       inputLog, leftInputLog, rightInputLog *mil.MockInterface
       targetKey, nextKey                    string
       maxEntropyCall                        *gomock.Call
+      keyCountCall                          *gomock.Call
+      leftDecisionTree, rightDecisionTree   *mdt.MockInterface
+      keySetCall, leftAnyCall, rightAnyCall *gomock.Call
     )
 
     BeforeEach(func() {
-      targetKey = "the target key"
-      nextKey = "the next key to decide on"
       inputLog = mil.NewMockInterface(mockCtrl)
+      targetKey = "the target key"
+
       leftInputLog = mil.NewMockInterface(mockCtrl)
       rightInputLog = mil.NewMockInterface(mockCtrl)
 
-      maxEntropyCall = inputLog.EXPECT().MaxEntropy(targetKey).Return(nextKey)
+      maxEntropyCall = inputLog.EXPECT().MaxEntropy(targetKey)
     })
 
     Describe("when there are no features left to decide on", func() {
-      var (
-        keyCountCall *gomock.Call
-      )
+
       BeforeEach(func() {
         maxEntropyCall.Return(targetKey)
         inputLog.EXPECT().Len().Return(7)
         keyCountCall = inputLog.EXPECT().KeyCount(targetKey)
       })
+
       Context("when there are more occurances of the target key than absences", func() {
         It("decides with a value of true", func() {
           keyCountCall.Return(5)
@@ -93,14 +81,26 @@ var _ = Describe("DecisionTree", func() {
     })
 
     Describe("when there are still features to decide on", func() {
-      var (
-        keySetCall, leftAnyCall, rightAnyCall *gomock.Call
-      )
 
       BeforeEach(func() {
+        nextKey = "the next key to decide on"
+        maxEntropyCall = maxEntropyCall.Return(nextKey)
+
+        leftDecisionTree = mdt.NewMockInterface(mockCtrl)
+        rightDecisionTree = mdt.NewMockInterface(mockCtrl)
+
+        decisionTreeMocks := []*mdt.MockInterface{rightDecisionTree, leftDecisionTree}
+        // Inject left and right tree in alternating fashion
+        leftRightParity := 0
+        dt.New = func() dt.Interface {
+          leftRightParity++
+          return decisionTreeMocks[leftRightParity%2]
+        }
+
         inputLog.EXPECT().SplitOnKey(nextKey).Return(leftInputLog, rightInputLog)
         mockBinaryTree.EXPECT().InsertLeft(leftDecisionTree)
         mockBinaryTree.EXPECT().InsertRight(rightDecisionTree)
+
         keySetCall = mockBinaryTree.EXPECT().Set(nextKey).AnyTimes()
         rightAnyCall = rightInputLog.EXPECT().Any().Return(false)
         leftAnyCall = leftInputLog.EXPECT().Any().Return(false)
@@ -110,7 +110,6 @@ var _ = Describe("DecisionTree", func() {
 
         BeforeEach(func() {
           rightAnyCall.Return(true)
-          leftAnyCall.Return(false)
         })
 
         It("recurses on the right input set", func() {
@@ -124,7 +123,6 @@ var _ = Describe("DecisionTree", func() {
 
         BeforeEach(func() {
           leftAnyCall.Return(true)
-          rightAnyCall.Return(false)
         })
 
         It("recurses on the left input set", func() {
@@ -140,6 +138,9 @@ var _ = Describe("DecisionTree", func() {
       })
     })
 
+  })
+
+  Describe("#Decide", func() {
   })
 
 })
