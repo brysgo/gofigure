@@ -1,19 +1,28 @@
 #! /bin/bash -e
 
-mkdir -p $GOPATH/src/gofigure_mocks/mock_input_log/
-mockgen github.com/brysgo/gofigure/input_log Interface \
-  > $GOPATH/src/gofigure_mocks/mock_input_log/mock_input_log.go
-gofmt -w $GOPATH/src/gofigure_mocks/mock_input_log/mock_input_log.go
+MOCKPATH=$GOPATH'src/gofigure_mocks'
+PROJECTPATH=$GOPATH'src/github.com/brysgo/gofigure'
 
-mkdir -p $GOPATH/src/gofigure_mocks/mock_binary_tree/
-mockgen github.com/brysgo/gofigure/binary_tree Interface \
-  > $GOPATH/src/gofigure_mocks/mock_binary_tree/mock_binary_tree.go
-gofmt -w $GOPATH/src/gofigure_mocks/mock_binary_tree/mock_binary_tree.go
+old_ifs=${IFS}
+IFS=$'\n'
 
-mkdir -p $GOPATH/src/gofigure_mocks/mock_decision_tree/
-mockgen github.com/brysgo/gofigure/decision_tree Interface \
-  > $GOPATH/src/gofigure_mocks/mock_decision_tree/mock_decision_tree.go
-gofmt -w $GOPATH/src/gofigure_mocks/mock_decision_tree/mock_decision_tree.go
+# Create directory structure for mocks
+for directory in $( find $PROJECTPATH -type d ); do
+  new_directory=$( echo ${directory} | sed "s%$PROJECTPATH/%$MOCKPATH/%" )
+	# echo "mkdir -p \"${new_directory}\""
+	mkdir -p "${new_directory}"
+done
+
+
+# Generate mocks
+for file in $( find $PROJECTPATH -name "*test.go" -prune -o -type f -print | grep '\.go$' ); do
+	mock_file=$( echo ${file} | sed "s%$PROJECTPATH/%$MOCKPATH/%" | sed -E "s%(.*)/(.*)\.go%\1/mock_\2.go%" )
+	echo "mockgen -source=${file} > ${mock_file}"
+	mockgen -source=${file} > ${mock_file}
+done
+
+
+IFS=${old_ifs}
 
 echo >&2 "OK"
 
